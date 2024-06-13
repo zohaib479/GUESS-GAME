@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Number Guessing Game</title>
+    <style>
+        body{
+            background-color: gray;
+        }
+        .guessSubmit{
+            background-color: black;
+            color: white;
+            padding: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div id="wrapper">
+        <h1>Number GUESSING GAME</h1>
+        <p>Try and guess a number between 1 and 100</p>
+        <p>You have 10 attempts to guess the right number</p>
+        <br>
+
+        <form action="" class="form">
+            <label for="guessField" id="guessLabel">Guess a number</label>
+            <input type="text" id="guessField" class="guessField">
+            <input type="submit" value="Submit Guess" class="guessSubmit">
+        </form>
+
+        <div class="resultParas">
+            <p>Previous Guesses <span class="guesses"></span></p>
+            <p>Guesses Remaining <span class="remaining">10</span></p>
+            <p class="lowOrHi"></p>
+        </div>
+    </div>
+
+    <script>
+        let randomNumber = Math.floor(Math.random() * 100) + 1;
+        const submitButton = document.querySelector('.guessSubmit');
+        const userInput = document.querySelector('.guessField');
+        const guessSlot = document.querySelector('.guesses');
+        const remaining = document.querySelector('.remaining');
+        const lowOrHi = document.querySelector('.lowOrHi');
+        const resultParas = document.querySelector('.resultParas');
+
+        let prevGuess = [];
+        let numGuess = 1;
+        let playGame = true;
+
+        submitButton.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (playGame) {
+                const guess = parseInt(userInput.value);
+                validateGuess(guess);
+            }
+        });
+
+        function validateGuess(guess) {
+            if (isNaN(guess) || guess < 1 || guess > 100) {
+                alert("Please enter a valid number between 1 and 100.");
+            } else {
+                prevGuess.push(guess);
+                if (numGuess === 10) {
+                    displayMessage(`Game Over. The random number was ${randomNumber}`);
+                    endGame();
+                } else {
+                    displayGuess(guess);
+                    checkGuess(guess);
+                }
+            }
+        }
+
+        function checkGuess(guess) {
+            if (guess === randomNumber) {
+                displayMessage(`You guessed it!`);
+                endGame();
+            } else if (guess < randomNumber) {
+                displayMessage("Number is too low.");
+            } else if (guess > randomNumber) {
+                displayMessage("Number is too high.");
+            }
+        }
+
+        function displayGuess(guess) {
+            userInput.value = "";
+            guessSlot.textContent += guess + " ";
+            numGuess++;
+            remaining.textContent = 10 - numGuess + 1;
+        }
+
+        function displayMessage(message) {
+            lowOrHi.textContent = message;
+        }
+
+        function endGame() {
+            userInput.value = "";
+            userInput.setAttribute('disabled', 'disabled');
+            const newGameButton = document.createElement('button');
+            newGameButton.textContent = "Start New Game";
+            resultParas.appendChild(newGameButton);
+            newGameButton.addEventListener('click', () => {
+                resetGame();
+            });
+            playGame = false;
+        }
+
+        function resetGame() {
+            randomNumber = Math.floor(Math.random() * 100) + 1;
+            prevGuess = [];
+            numGuess = 1;
+            guessSlot.textContent = "";
+            remaining.textContent = 10;
+            userInput.removeAttribute('disabled');
+            lowOrHi.textContent = "";
+            resultParas.removeChild(resultParas.lastElementChild);
+            playGame = true;
+        }
+    </script>
+</body>
+</html>
